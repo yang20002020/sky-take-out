@@ -1,5 +1,4 @@
 package com.sky.mapper;
-
 import com.sky.entity.Employee;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
