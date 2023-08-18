@@ -14,6 +14,7 @@
 
     </select>
 
+
     <update id="update" parameterType="Employee">
           update employee
          <set>
@@ -52,4 +53,6 @@
          where id =#{id}
 
     </update>
+
+
 </mapper>

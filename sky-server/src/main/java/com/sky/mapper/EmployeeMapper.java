@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+
 @Mapper
 public interface EmployeeMapper {
 
@@ -39,4 +40,12 @@ public interface EmployeeMapper {
      * @param employee
      */
     void update(Employee employee);
+
+    /**
+     * 根据id 查询员工信息
+     * @param id
+     * @return
+     */
+    @Select("select *from employee where id = #{id} ")
+    Employee getById( Long id);
 }
