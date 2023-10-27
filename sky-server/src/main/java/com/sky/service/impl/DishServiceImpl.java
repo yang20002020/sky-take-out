@@ -101,13 +101,21 @@ public class DishServiceImpl implements DishService {
         }
 
 
-        ids.forEach(id->{
-            //删除菜品表中的菜品数据
-            dishMapper.deleteById(id);
-            //删除菜品关联的口味数据，即口味表中的数据
-            dishFlavorMapper.deleteByDishId(id);
+//        ids.forEach(id->{
+//            //删除菜品表中的菜品数据
+//            dishMapper.deleteById(id);
+//            //删除菜品关联的口味数据，即口味表中的数据
+//            dishFlavorMapper.deleteByDishId(id);
+//
+//        });
 
-        });
+        //删除菜品表中的菜品数据
+        //sql : delete from dish where in in (?,?,?)
+        dishMapper.deleteByIds(ids);
+
+        //删除菜品关联的口味数据，即口味表中的数据
+       // delete from dish_flavor  where dish_id in (?,?,?)
+        dishFlavorMapper.deleteByDishIds(ids);
     }
 
 }
