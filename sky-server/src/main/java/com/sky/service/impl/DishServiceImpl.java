@@ -1,12 +1,16 @@
 package com.sky.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -25,6 +29,9 @@ public class DishServiceImpl implements DishService {
     private DishMapper dishMapper;
     @Autowired
     private DishFlavorMapper dishFlavorMapper;
+
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
 
     /**
      * 新增菜品和对应的口味
@@ -67,6 +74,40 @@ public class DishServiceImpl implements DishService {
          Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
 
         return new PageResult(page.getTotal(),page.getResult());
+    }
+
+    /**
+     * 批量删除
+     * @param ids
+     */
+    @Transactional
+    @Override
+    public void deleteBatch(List<Long> ids) {
+        ids.forEach(id->{
+             //根据主键查询菜品
+            Dish dish= dishMapper.getById(id);
+            //判断 当前要删除的菜品状态是否为起售中
+            if(dish.getStatus()== StatusConstant.ENABLE) {
+                //  如果是起售中，抛出业务异常
+                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            }
+        });
+
+        //判断当前要删除的菜品是否被套餐关联了
+        List<Long> setmealIds=setmealDishMapper.getSetmealIdsByDishIds(ids);
+        if(setmealIds!=null && setmealIds.size()>0){
+            //如果关联了，抛出业务异常
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        }
+
+
+        ids.forEach(id->{
+            //删除菜品表中的菜品数据
+            dishMapper.deleteById(id);
+            //删除菜品关联的口味数据，即口味表中的数据
+            dishFlavorMapper.deleteByDishId(id);
+
+        });
     }
 
 }
