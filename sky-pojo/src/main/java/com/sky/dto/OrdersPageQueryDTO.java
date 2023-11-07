@@ -1,5 +1,4 @@
 package com.sky.dto;
-
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
