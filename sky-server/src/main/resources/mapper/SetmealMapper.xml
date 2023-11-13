@@ -48,7 +48,6 @@
         order by s.create_time desc
     </select>
 
-
     <update id="update" parameterType="Setmeal">
         update setmeal
         <set>
@@ -79,4 +78,16 @@
         </set>
         where id = #{id}
     </update>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from setmeal
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
 </mapper>
